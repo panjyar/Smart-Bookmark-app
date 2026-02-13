@@ -28,5 +28,15 @@ create policy "Users can delete own bookmarks"
   for delete
   using (auth.uid() = user_id);
 
+-- Policy: Users can update their own bookmarks
+create policy "Users can update own bookmarks"
+  on bookmarks
+  for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
 -- Enable realtime for the bookmarks table
 alter publication supabase_realtime add table bookmarks;
+
+-- Grant realtime access (ensures realtime can read changes)
+grant all on bookmarks to postgres, anon, authenticated, service_role;
